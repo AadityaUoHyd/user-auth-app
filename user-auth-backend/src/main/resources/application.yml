@@ -1,0 +1,76 @@
+server:
+  port: 8081
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:9f4c7ab12e0d8bcf3a1e76cd04f9b82c6ef13b02ff56a7c91d9c4b45e60bd8a1}
+    issuer: ${JWT_ISSUER:user-auth-backend}
+    access-ttl-seconds: ${JWT_ACCESS_TTL_SECONDS:300}       # 5 minutes
+    refresh-ttl-seconds: ${JWT_REFRESH_TTL_SECONDS:2592000} # 30 days
+    refresh-cookie-name: ${JWT_REFRESH_COOKIE_NAME:refresh_token}
+    cookie-secure: ${JWT_COOKIE_SECURE:true}
+    cookie-same-site: ${JWT_COOKIE_SAME_SITE:Lax}
+spring:
+  application:
+    name: user-auth-backend
+
+  #PostgreSQL db configuration
+  datasource:
+    url: ${DB_URL:xyz}
+    username: ${DB_USER:xyz}
+    password: ${DB_PASSWORD:xyz}
+
+    hikari:
+      pool-name: neon-hikari
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 30000          # 30s
+      connection-timeout: 20000    # 20s
+      max-lifetime: 1800000        # 30m (Neon sleeps idle connections around this)
+      validation-timeout: 5000
+      leak-detection-threshold: 0
+      initialization-fail-timeout: -1
+
+  jpa:
+    hibernate:
+      ddl-auto: update              # this for dev only; will consider Flyway in prod
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  #OAuth2 configuration
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ${GITHUB_CLIENT_ID:Ov23li53ZHIoYXdenDE7}
+            client-secret: ${GITHUB_CLIENT_SECRET:xyz}
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - user:email
+              - read:user
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:724785788822-gq1h4lv7dv6db52fdrqmh41ra3o6u0gq.apps.googleusercontent.com}
+            client-secret: ${GOOGLE_CLIENT_SECRET:xyz}
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - email
+              - profile
+              - openid
+        provider:
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: id
+
+app:
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173}
+  auth:
+    success-redirect: ${AUTH_SUCCESS_REDIRECT:http://localhost:5173/auth/success}
+    failure-redirect: ${AUTH_FAILURE_REDIRECT:http://localhost:5173/auth/failure}
+
+logging.level.org.aadi.auth: DEBUG
