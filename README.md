@@ -355,13 +355,6 @@ user-auth-app/
 | Build frontend        | `npm run build`                  |
 | Lint & format         | `npm run lint` (frontend)        |
 
----
-
-## 🚀 Quick Start (One-Command Dev)
-
-1. Start PostgreSQL (e.g., via Docker: `docker run -p 5432:5432 -e POSTGRES_DB=user_auth_app -e POSTGRES_PASSWORD=pass postgres`).
-2. In root: `npm run setup` (if scripted) or run backend/frontend separately.
-3. Visit **http://localhost:5173** → Register/Login → Dashboard.
 
 ---
 
