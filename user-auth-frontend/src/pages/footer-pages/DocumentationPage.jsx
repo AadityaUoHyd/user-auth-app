@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Code, Download, ExternalLink, Copy } from "lucide-react";
 import { Helmet } from "react-helmet";
-
+import docsImg from "@/assets/docs.png";
 export default function DocumentationPage() {
   return (
     <div className="min-h-screen bg-background p-6">
@@ -16,7 +16,7 @@ export default function DocumentationPage() {
       <div className="mx-auto max-w-4xl space-y-8">
         <h1 className="text-3xl font-bold text-center">Documentation</h1>
         <p className="text-xl text-muted-foreground text-center">Everything you need to integrate authentication into your app.</p>
-
+        <img src={docsImg} className="w-48 h-48 mx-auto" />
         {/* Quick Start */}
         <Card>
           <CardHeader>

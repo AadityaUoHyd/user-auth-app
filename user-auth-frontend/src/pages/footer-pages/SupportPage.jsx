@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Send, Mail, Phone, MessageCircle } from "lucide-react";
 import { Helmet } from "react-helmet";
+import Img from "@/assets/support.png";
 
 export default function SupportPage() {
   const [formData, setFormData] = useState({ email: "", subject: "", message: "" });
@@ -32,7 +33,7 @@ export default function SupportPage() {
       <div className="mx-auto max-w-4xl space-y-6">
         <h1 className="text-3xl font-bold text-center">Support</h1>
         <p className="text-xl text-muted-foreground text-center">We're here to help. Reach out for any issues or questions.</p>
-
+        <img src={Img} className="w-48 h-48 mx-auto" />
         {/* Quick Help */}
         <Card>
           <CardHeader>

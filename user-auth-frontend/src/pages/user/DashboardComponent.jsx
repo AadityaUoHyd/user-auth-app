@@ -45,9 +45,9 @@ import {
 } from "@/components/ui/table";
 function DashboardComponent() {
 return (<>
-    <div className="flex items-center justify-between gap-2">
+    <div className="flex items-center justify-between gap-2 m-4">
                   <div>
-                    <h1 className="text-xl font-semibold">Overview</h1>
+                    <h1 className="text-3xl font-semibold">Overview</h1>
                     <p className="text-sm text-muted-foreground">
                       Quick insights for your project.
                     </p>
@@ -99,7 +99,7 @@ return (<>
                 </section>
 
                 {/* Tabs + Table */}
-                <section className="rounded-lg border bg-card">
+                <section className="rounded-lg border bg-card m-4">
                   <Tabs defaultValue="all">
                     <div className="flex items-center justify-between border-b p-4">
                       <TabsList>

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Calendar, Scale, Shield } from "lucide-react";
 import { Helmet } from "react-helmet";
-
+import Img from "@/assets/terms.png";
 export default function TermsConditionsPage() {
   return (
     <div className="min-h-screen bg-background p-6">
@@ -15,6 +15,7 @@ export default function TermsConditionsPage() {
       <div className="mx-auto max-w-4xl space-y-6">
         <div className="text-center">
           <h1 className="text-3xl font-bold">Terms & Conditions</h1>
+          <img src={Img} className="w-48 h-48 mx-auto rounded" />
           <Badge variant="secondary" className="mt-2 flex items-center gap-1">
             <Calendar className="h-4 w-4" />
             Effective: December 03, 2025
