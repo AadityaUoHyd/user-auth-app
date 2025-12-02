@@ -42,6 +42,18 @@ ALLOWED_ORIGINS=http://localhost:5173
 AUTH_SUCCESS_REDIRECT=http://localhost:5173/auth/success
 AUTH_FAILURE_REDIRECT=http://localhost:5173/auth/failure
 
+
+# ================================
+# SET MINIMUM LENGTH FOR PASSWORD
+# ================================
+APP_PASSWORD_MIN_LENGTH=8
+
+# ===========================
+# MAILING SERVICE
+# ===========================
+MAIL_USERNAME=aadityaraj.raj402@gmail.com
+MAIL_PASSWORD=yfydlqypkyrwsgco
+
 ```
 
 - Either run using IDE OR go to root of backend project folder and run at command line =>

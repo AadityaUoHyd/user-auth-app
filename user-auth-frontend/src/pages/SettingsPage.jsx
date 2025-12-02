@@ -7,13 +7,16 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useAuthStore } from "@/utils/auth";
-import { updateSettings } from "@/services/auth.service"; // Make sure this exists
+import { updateSettings, deleteAccount } from "@/services/auth.service";
+import { useTheme } from "next-themes";
 import toast from "react-hot-toast";
 import { Moon, Bell, Shield, Trash2, Save } from "lucide-react";
 
 export default function SettingsPage() {
   const user = useAuthStore(state => state.user);
   const setUser = useAuthStore(state => state.setUser);
+
+  const { theme, setTheme } = useTheme();
 
   const [settings, setSettings] = useState({
     theme: "light",
@@ -38,14 +41,21 @@ export default function SettingsPage() {
     }
   }, [settings, setUser, user]);
 
-  const handleDeleteAccount = useCallback(() => {
+  const logout = useAuthStore(state=>state.logout);
+  const handleDeleteAccount = useCallback(async () => {
     if (confirm("Are you sure? This cannot be undone.")) {
-      toast.success("Account deleted. Redirecting to login...");
+      try {
+        await deleteAccount();
+        toast.success("Account deleted");
+        await logout();
+      } catch (e) {
+        toast.error("Failed to delete account");
+      }
     }
-  }, []);
+  }, [logout]);
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-background p-6 mb-8">
       <div className="mx-auto max-w-2xl space-y-6">
         <h1 className="text-3xl font-bold">Settings</h1>
 
@@ -64,8 +74,8 @@ export default function SettingsPage() {
                 <p className="text-sm text-muted-foreground">Toggle between light and dark themes.</p>
               </div>
               <Switch
-                checked={settings.theme === "dark"}
-                onCheckedChange={(checked) => handleSettingChange("theme", checked ? "dark" : "light")}
+                checked={theme === "dark"}
+                onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
               />
             </div>
           </CardContent>
@@ -98,10 +108,8 @@ export default function SettingsPage() {
                 <p className="text-sm text-muted-foreground">Get updates via email.</p>
               </div>
               <Switch
-                checked={settings.theme === "dark"}
-                onCheckedChange={(checked) =>
-                  handleSettingChange("theme", checked ? "dark" : "light")
-                }
+                checked={settings.emailNotifications}
+                onCheckedChange={(checked) => handleSettingChange("emailNotifications", checked)}
               />
 
             </div>

@@ -4,7 +4,9 @@ const TOKEN_KEY = "access_token";
 export const useAuthStore = create((set) => ({
   accessToken: localStorage.getItem(TOKEN_KEY),
   user: null,
-  status: "idle",
+  status: "authenticating",
+
+  setUser: (user) => set({ user }),
 
   setAccessToken: (token) => {
     if (token) {
@@ -61,4 +63,3 @@ export const useAuthStore = create((set) => ({
     set({ accessToken: null, user: null, status: "anonymous" });
   },
 }));
-``;

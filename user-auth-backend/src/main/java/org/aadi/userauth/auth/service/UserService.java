@@ -5,6 +5,7 @@ import org.aadi.userauth.auth.model.User;
 import org.aadi.userauth.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public class UserService {
                     .enabled(true)
                     .build();
         });
-        return userRepository.save(user);
+        return userRepository.save(Objects.requireNonNull(user));
 
 
     }

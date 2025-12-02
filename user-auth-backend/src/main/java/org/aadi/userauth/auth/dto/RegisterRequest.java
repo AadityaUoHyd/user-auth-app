@@ -21,4 +21,6 @@ public class RegisterRequest {
     @Size(min = 8, max = 255, message = "Password must be between 8 and 255 characters")
     private String password;
     private String image;
+    @Size(min = 10, max = 15, message = "Mobile must be between 10 and 15 characters with codes")
+    private String mobile;
 }

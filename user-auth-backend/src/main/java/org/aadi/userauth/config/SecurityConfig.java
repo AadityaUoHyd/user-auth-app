@@ -25,7 +25,6 @@ import org.springframework.web.cors.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @Slf4j
 @Configuration
@@ -40,8 +39,6 @@ public class SecurityConfig {
     @Value("${app.auth.failure-redirect}")
     private String failureRedirectURL;
 
-    private Logger logger = Logger.getLogger(SecurityConfig.class.getName());
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -51,29 +48,30 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers(
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/register",
+                                "/api/v1/auth/refresh",
+                                "/api/v1/auth/verify-otp",
+                                "/api/v1/auth/forgot-password",
+                                "/api/v1/auth/reset-password").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .oauth2Login(oauth2 ->
-                        oauth2
-                                .successHandler(oAuth2SuccessHandler)
-                                .failureHandler((req, resp, e) -> {
-                                    resp.setStatus(401);
-                                    resp.sendRedirect(failureRedirectURL + "?error=" + e.getMessage());
-                                })
-                )
+                        .anyRequest().authenticated())
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuth2SuccessHandler)
+                        .failureHandler((req, resp, e) -> {
+                            resp.setStatus(401);
+                            resp.sendRedirect(failureRedirectURL + "?error=" + e.getMessage());
+                        }))
                 .logout(AbstractHttpConfigurer::disable)
 
-
                 .exceptionHandling(eh -> eh.authenticationEntryPoint((req, resp, e) -> {
-                    e.printStackTrace();
+                    log.error("Authentication error: ", e);
                     resp.setStatus(401);
                     resp.setContentType("application/json");
 
                     String message = (String) req.getAttribute(
-                            "exception"
-                    );
+                            "exception");
 
                     ObjectMapper om = new ObjectMapper();
 
@@ -83,18 +81,15 @@ public class SecurityConfig {
                         return;
                     } else if (message != null && message.trim().equals("invalid_token")) {
                         resp.getWriter().println(om.writeValueAsString(Map.of("message", "invalid_token")));
-                    }else{
+                    } else {
                         resp.getWriter().println(om.writeValueAsString(Map.of("message", e.getMessage())));
                     }
 
-
-                     }))
+                }))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
 
         return http.build();
     }
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
@@ -103,14 +98,14 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // BCrypt with default strength is suitable; increase log rounds in high-security contexts
+        // BCrypt with default strength is suitable; increase log rounds in
+        // high-security contexts
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource(
-            @Value("${app.cors.allowed-origins}") String allowedOrigins
-    ) {
+            @Value("${app.cors.allowed-origins}") String allowedOrigins) {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(allowedOrigins)); // For production, restrict to your frontends
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

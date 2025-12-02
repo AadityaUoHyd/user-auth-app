@@ -30,7 +30,7 @@ public class JwtService {
             @Value("${security.jwt.secret}") String secret,
             @Value("${security.jwt.access-ttl-seconds:300}") long accessTtlSeconds,         // 5 minutes
             @Value("${security.jwt.refresh-ttl-seconds:2592000}") long refreshTtlSeconds,   // 30 days
-            @Value("${security.jwt.issuer:user-userauth-backend}") String issuer
+            @Value("${security.jwt.issuer:user-auth-backend}") String issuer
     ) {
         if (secret == null || secret.length() < 64) {
             throw new IllegalStateException("JWT secret must be at least 64 characters. Provide via env JWT_SECRET.");

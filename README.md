@@ -7,6 +7,21 @@ Supports **JWT-based authentication** with **username/password login**, as well 
 
 ---
 
+## Features
+- Register (Signup)
+- Login
+- Google & GitHub OAuth2 login.
+- Verify email with OTP during registration. Used Gmail App Password at .env file for communication over SMTP.
+- Get/Reset your 'Forgotten Password' using your email OTP
+- Reset Password using old password when loggedIn
+- User Profile page with updatable details (name, mobile, password)
+- Email can't be updated as primary source of truth. Also, user profile image not yet implemented.
+- Dark/White themes.
+- Few dummy pages around to give look & feel of project. you are supposed to delete those while implementing your
+  own project top of it, taking Auth as given service.
+
+---
+
 ## 🧱 Tech Stack
 
 ### 🖥️ Frontend
@@ -90,15 +105,6 @@ user-auth-app/
 ├── README.md
 └── LICENSE
 ```
-
-
----
-
-## Major Pending Task
-- Verify email with OTP
-- Forget password using email OTP
-- Reset new password using old password
-
 ---
 
 ## ⚙️ Backend Setup (Spring Boot)
@@ -122,10 +128,10 @@ user-auth-app/
 2. Create a PostgreSQL database:
 
    ```sql
-   CREATE DATABASE user_auth_app;
+   CREATE DATABASE user_auth_app_db;
    -- Optional: Create user with privileges
    CREATE USER auth_user WITH PASSWORD 'secure_password';
-   GRANT ALL PRIVILEGES ON DATABASE user_auth_app TO auth_user;
+   GRANT ALL PRIVILEGES ON DATABASE user_auth_app_db TO auth_user;
    ```
 
 3. Copy `.env.example` to `.env` and fill in values:
@@ -151,85 +157,6 @@ user-auth-app/
    ```
 
 4. Configure `application.yml` (overrides .env where needed; uses `${VAR}` placeholders):
-
-   ```yaml
-   server:
-     port: 8081
-
-   spring:
-     application:
-       name: user-auth-backend
-
-     # PostgreSQL DB configuration
-     datasource:
-       url: ${DB_URL:jdbc:postgresql://localhost:5432/user_auth_app}
-       username: ${DB_USERNAME:postgres}
-       password: ${DB_PASSWORD}
-       hikari:
-         pool-name: auth-hikari
-         maximum-pool-size: 10
-         minimum-idle: 2
-         idle-timeout: 30000
-         connection-timeout: 20000
-         max-lifetime: 1800000
-         validation-timeout: 5000
-         leak-detection-threshold: 0
-         initialization-fail-timeout: -1
-
-     jpa:
-       hibernate:
-         ddl-auto: update  # Use 'validate' or Flyway in prod
-       show-sql: true
-       properties:
-         hibernate:
-           dialect: org.hibernate.dialect.PostgreSQLDialect
-       database-platform: org.hibernate.dialect.PostgreSQLDialect
-
-     # OAuth2 configuration
-     security:
-       oauth2:
-         client:
-           registration:
-             google:
-               client-id: ${GOOGLE_CLIENT_ID}
-               client-secret: ${GOOGLE_CLIENT_SECRET}
-               redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-               scope: [email, profile, openid]
-             github:
-               client-id: ${GITHUB_CLIENT_ID}
-               client-secret: ${GITHUB_CLIENT_SECRET}
-               redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-               scope: [user:email, read:user]
-           provider:
-             github:
-               authorization-uri: https://github.com/login/oauth/authorize
-               token-uri: https://github.com/login/oauth/access_token
-               user-info-uri: https://api.github.com/user
-               user-name-attribute: id
-
-   # JWT and App Configs (with fallbacks)
-   security:
-     jwt:
-       secret: ${JWT_SECRET:default-secret-change-in-prod}
-       issuer: ${JWT_ISSUER:user-auth-backend}
-       access-ttl-seconds: ${JWT_ACCESS_TTL_SECONDS:900}  # 15 min
-       refresh-ttl-seconds: ${JWT_REFRESH_TTL_SECONDS:1209600}  # 14 days
-       refresh-cookie-name: ${JWT_REFRESH_COOKIE_NAME:refresh_token}
-       cookie-secure: ${JWT_COOKIE_SECURE:false}
-       cookie-same-site: ${JWT_COOKIE_SAME_SITE:Lax}
-
-   app:
-     cors:
-       allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
-     auth:
-       success-redirect: ${AUTH_SUCCESS_REDIRECT:http://localhost:5173/dashboard}
-       failure-redirect: ${AUTH_FAILURE_REDIRECT:http://localhost:5173/login?error=true}
-
-   logging:
-     level:
-       org.springframework.security: DEBUG
-       org.aadi.userauth: DEBUG
-   ```
 
 5. Run the Spring Boot app:
 
@@ -267,7 +194,7 @@ user-auth-app/
 3. Copy `.env.example` to `.env` and configure:
 
    ```
-   VITE_BACKEND_URL=http://localhost:8081
+   VITE_BACKEND_URL=http://localhost:8081/
    VITE_APP_NAME=User Auth App
    ```
 
@@ -303,7 +230,7 @@ user-auth-app/
 
 ---
 
-## 🔑 Example API Endpoints
+## 🔑 Few Example API Endpoints
 
 | Method | Endpoint                       | Description                          | Auth Required |
 |--------|--------------------------------|--------------------------------------|---------------|

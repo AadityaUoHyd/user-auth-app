@@ -17,6 +17,7 @@ public class RegisterResponse {
     private String email;
     private String name;
     private String image;
+    private String mobile;
     private boolean enabled;
     private Instant createdAt;
     private Instant updatedAt;

@@ -1,19 +1,28 @@
 import { useAuthStore } from "@/utils/auth";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
-import React, { use } from "react";
+import React, { useEffect } from "react";
 import { Outlet } from "react-router";
 
 function AppLayout() {
   const bootStrap = useAuthStore((state) => state.bootstrap);
-  bootStrap();
+
+  useEffect(() => {
+    bootStrap();
+  }, [bootStrap]);
+
   return (
-    <div>
+    <div className="flex min-h-screen flex-col">
+      {/* Header */}
       <Navbar />
-      <div>
+
+      {/* Main content grows */}
+      <main className="flex-1 w-full">
         <Outlet />
-      </div>
-      <Footer />
+      </main>
+
+      {/* Footer stays at bottom */}
+      <Footer className="mt-auto w-full" />
     </div>
   );
 }

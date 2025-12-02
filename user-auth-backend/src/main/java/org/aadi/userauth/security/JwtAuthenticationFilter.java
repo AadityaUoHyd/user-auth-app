@@ -14,9 +14,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.lang.NonNull;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -29,9 +31,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header != null && header.startsWith("Bearer ")) {
@@ -40,8 +42,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (jwtService.isAccessToken(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
                     Jws<io.jsonwebtoken.Claims> jws = jwtService.parse(token);
                     Claims claims = jws.getBody();
-                    java.util.UUID userId = UUID.fromString(claims.getSubject());
-                    userRepository.findById(userId).ifPresent(user -> {
+                    UUID userId = UUID.fromString(claims.getSubject());
+                    userRepository.findById(Objects.requireNonNull(userId)).ifPresent(user -> {
                         List<GrantedAuthority> authorities = user.getRoles() == null ? java.util.List.of()
                                 : user.getRoles().stream()
                                 .map(r -> new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + r.getName()))
@@ -53,12 +55,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(auth);
                     });
                 }
-            } catch (ExpiredJwtException ignored) {
+            } catch (ExpiredJwtException ex) {
+                // Mark for entry point but avoid full stacktrace logging
                 request.setAttribute("exception", "token_expired");
-                throw new JwtException("Token expired");
-            } catch (JwtException e) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            } catch (JwtException ex) {
                 request.setAttribute("exception", "invalid_token");
-                throw new JwtException("Invalid token");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             } catch (Exception ex) {
                 throw ex;
             }
@@ -68,12 +73,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-
-        if(request.getRequestURI().equals("/api/v1/auth/me")){
-            return false;
-        }
-
-        return request.getRequestURI().startsWith("/api/v1/auth");
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        // Endpoints that do NOT require authentication and therefore should skip the JWT filter
+        return switch (uri) {
+            case "/api/v1/auth/login",
+                 "/api/v1/auth/register",
+                 "/api/v1/auth/refresh",
+                 "/api/v1/auth/verify-otp",
+                 "/api/v1/auth/forgot-password",
+                 "/api/v1/auth/reset-password" -> true;
+            default -> false; // run filter for every other path, including /me and /change-password
+        };
     }
 }

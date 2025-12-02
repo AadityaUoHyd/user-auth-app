@@ -8,86 +8,98 @@ export const baseURL = `${BASE}api/v1`;
 
 // Create Axios instance
 const api = axios.create({
-  baseURL: baseURL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: true, // include cookies if using cookie-based auth
-  timeout: 10000, // 10s timeout
+  baseURL,
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true,
+  timeout: 10000,
 });
 
-// Attach access token (from memory) before every request
+/* -----------------------------------------------------------
+   🔹 ATTACH ACCESS TOKEN BEFORE EVERY REQUEST
+----------------------------------------------------------- */
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken;
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
-// 🚨 Optional: handle global errors
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // logout or refresh token logic
-      console.warn("Unauthorized, redirect to login");
-    }
-    return Promise.reject(error);
-  }
-);
 
-//call refresh token to refresh access token
-//If server says 401 (token expired), try to refresh once and retry
+/* -----------------------------------------------------------
+   🔹 REFRESH TOKEN HANDLER
+----------------------------------------------------------- */
+
+// Prevent multiple refresh calls
 let isRefreshing = false;
-let pending = [];
 
-function queueRequest(cb) {
-  pending.push(cb);
-}
-function resolveQueued(newToken) {
-  pending.forEach((cb) => cb(newToken));
-  pending = [];
-}
+// Store failed requests temporarily
+let failedQueue = [];
 
+/**
+ * Add a failed request to queue.
+ */
+const addToQueue = (cb) => {
+  failedQueue.push(cb);
+};
+
+/**
+ * Resolve all queued requests after token refresh.
+ */
+const resolveQueue = (newToken) => {
+  failedQueue.forEach((cb) => cb(newToken));
+  failedQueue = [];
+};
+
+/* -----------------------------------------------------------
+   🔹 RESPONSE INTERCEPTOR
+----------------------------------------------------------- */
 api.interceptors.response.use(
   (res) => res,
+
   async (error) => {
     const original = error.config;
     const is401 = error.response?.status === 401;
 
+    // If not 401 OR already retried, exit
     if (!is401 || original._retry) return Promise.reject(error);
+
     original._retry = true;
 
-    // If a refresh is already running, wait for it
+    /* ---------- If a refresh request is already running ---------- */
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
-        queueRequest((newToken) => {
+        addToQueue((newToken) => {
           if (!newToken) return reject(error);
+
           original.headers.Authorization = `Bearer ${newToken}`;
           resolve(api(original));
         });
       });
     }
 
-    // Start refresh
+    /* ---------- Start a new refresh token request ---------- */
     isRefreshing = true;
+
     try {
-      const accessToken = await refreshToken();
-      const newToken = accessToken.accessToken;
-      if (!newToken) throw new Error("No access token returned");
+      const response = await refreshToken(); // MUST return { accessToken }
+      const newAccessToken = response?.accessToken;
 
-      // Update memory state
-      useAuthStore.getState().setAccessToken(newToken);
+      if (!newAccessToken) throw new Error("No accessToken returned");
 
-      // Resume queued requests
-      resolveQueued(newToken);
+      // Update token in Zustand
+      useAuthStore.getState().setAccessToken(newAccessToken);
 
-      // Retry the original request
-      original.headers.Authorization = `Bearer ${newToken}`;
+      // Resume all queued requests
+      resolveQueue(newAccessToken);
+
+      // Retry original request
+      original.headers.Authorization = `Bearer ${newAccessToken}`;
       return api(original);
-    } catch (err) {
-      // Refresh failed: clear auth and fail everyone waiting
-      resolveQueued(null);
+
+    } catch (refreshErr) {
+      // Refresh failed → logout user
+      resolveQueue(null);
       useAuthStore.getState().logout({ silent: true });
-      return Promise.reject(err);
+      return Promise.reject(refreshErr);
+
     } finally {
       isRefreshing = false;
     }

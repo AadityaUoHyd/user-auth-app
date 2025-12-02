@@ -4,7 +4,7 @@ import { CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Mail, Lock, User as UserIcon } from "lucide-react";
+import { Mail, Lock, User as UserIcon, Phone } from "lucide-react";
 import AuthLayout from "./auth.layout";
 import OAuthButtons from "@/components/auth/oauth.buttons";
 import { NavLink, useNavigate } from "react-router";
@@ -19,6 +19,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [mobile, setMobile] = useState(""); // Add this at the top with other states
 
   const navigate = useNavigate(); // Placeholder for navigation function
   async function onSubmit(e) {
@@ -27,9 +28,8 @@ export default function RegisterPage() {
     setError(null);
     try {
       const r = await signup({ name, email, password });
-      console.log(r);
-      toast.success("Account created successfully! Please log in.");
-      navigate("/login");
+      toast.success("OTP sent to your email. Verify to complete registration.");
+      navigate(`/verify-otp?email=${encodeURIComponent(email)}`);
     } catch (err) {
       console.log(err);
       setError(err?.response?.data?.message || "Something went wrong");
@@ -60,6 +60,23 @@ export default function RegisterPage() {
               className="pl-9"
             />
           </div>
+        </div>
+        <div className="grid gap-2">
+                  <Label htmlFor="name">Mobile</Label>
+                  <div className="relative">
+                    <Phone
+                      className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+                      aria-hidden
+                    />
+                    <Input
+                      id="mobile"
+                      placeholder="Your mobile number"
+                      value={mobile}
+                      onChange={(e) => setMobile(e.target.value)}
+                      required
+                      className="pl-9"
+                    />
+                  </div>
         </div>
         <div className="grid gap-2">
           <Label htmlFor="reg-email">Email</Label>

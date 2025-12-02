@@ -50,7 +50,7 @@ export default function AnalyticsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-full bg-background p-6">
       <div className="mx-auto max-w-screen-2xl space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Analytics</h1>

@@ -1,5 +1,6 @@
 package org.aadi.userauth.auth.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aadi.userauth.auth.dto.*;
 import org.aadi.userauth.auth.model.RefreshToken;
 import org.aadi.userauth.auth.model.User;
@@ -7,8 +8,6 @@ import org.aadi.userauth.auth.repository.RefreshTokenRepository;
 import org.aadi.userauth.auth.repository.UserRepository;
 import org.aadi.userauth.auth.service.AuthService;
 import org.aadi.userauth.auth.service.CookieService;
-
-import org.aadi.userauth.auth.service.UserService;
 import org.aadi.userauth.security.JwtService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
@@ -19,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
@@ -27,18 +27,18 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -47,7 +47,7 @@ public class AuthController {
     private final JwtService jwtService;
     private final AuthService authService;
     private final CookieService cookieService;
-    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
@@ -76,7 +76,7 @@ public class AuthController {
                 .expiresAt(Instant.now().plusSeconds(jwtService.getRefreshTtlSeconds()))
                 .revoked(false)
                 .build();
-        refreshTokenRepository.save(rt);
+        refreshTokenRepository.save(Objects.requireNonNull(rt));
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user, jti);
@@ -87,14 +87,15 @@ public class AuthController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .body(TokenResponse.bearerWithUser(accessToken, refreshToken, 900, new UserDto(user.getName(), user.getEmail(), user.isEnabled(),user.getImage(), user.getCreatedAt(), user.getUpdatedAt())));
+                .body(TokenResponse.bearerWithUser(accessToken, refreshToken, 900,
+                        new UserDto(user.getName(), user.getEmail(), user.isEnabled(), user.getImage(),
+                                user.getMobile(), user.getCreatedAt(), user.getUpdatedAt())));
     }
 
     private Authentication authenticate(LoginRequest request) {
         try {
             return authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.email(), request.password())
-            );
+                    new UsernamePasswordAuthenticationToken(request.email(), request.password()));
         } catch (Exception e) {
             throw new BadCredentialsException("Invalid username or password !!");
         }
@@ -105,8 +106,7 @@ public class AuthController {
     public ResponseEntity<TokenResponse> refresh(
             @RequestBody(required = false) RefreshTokenRequest body,
             HttpServletRequest request,
-            HttpServletResponse response
-    ) {
+            HttpServletResponse response) {
         String token = readRefreshTokenFromRequest(body, request)
                 .orElseThrow(() -> new BadCredentialsException("Refresh token missing"));
 
@@ -131,7 +131,7 @@ public class AuthController {
         stored.setRevoked(true);
         String newJti = UUID.randomUUID().toString();
         stored.setReplacedByToken(newJti);
-        refreshTokenRepository.save(stored);
+        refreshTokenRepository.save(Objects.requireNonNull(stored));
 
         User user = stored.getUser();
         RefreshToken newRt = RefreshToken.builder()
@@ -141,7 +141,7 @@ public class AuthController {
                 .expiresAt(Instant.now().plusSeconds(jwtService.getRefreshTtlSeconds()))
                 .revoked(false)
                 .build();
-        refreshTokenRepository.save(newRt);
+        refreshTokenRepository.save(Objects.requireNonNull(newRt));
 
         String newAccess = jwtService.generateAccessToken(user);
         String newRefresh = jwtService.generateRefreshToken(user, newJti);
@@ -163,7 +163,7 @@ public class AuthController {
                     String jti = jwtService.getJti(token);
                     refreshTokenRepository.findByJti(jti).ifPresent(rt -> {
                         rt.setRevoked(true);
-                        refreshTokenRepository.save(rt);
+                        refreshTokenRepository.save(Objects.requireNonNull(rt));
                     });
                 }
             } catch (JwtException ignored) {
@@ -220,6 +220,67 @@ public class AuthController {
 
     @GetMapping("/me")
     public User getCurrentUser(Principal principal) {
-        return userRepository.findByEmail(principal.getName()).orElseThrow(() -> new UsernameNotFoundException("You are not loggedIn"));
+        return userRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("You are not loggedIn"));
     }
+
+    // Update AuthController.java - Add new endpoints
+    @PostMapping("/verify-otp")
+    public ResponseEntity<Void> verifyRegistration(@RequestBody VerifyOtpRequest request) {
+        authService.verifyRegistrationOtp(request.email(), request.otp());
+        return ResponseEntity.ok().build();
+    }
+
+    // In AuthController.java
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        try {
+            authService.sendResetOtp(request.email());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("Error in forgot password for email: {}", request.email(), e);
+            // Return success even on error to prevent email enumeration
+            return ResponseEntity.ok().build();
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        try {
+            authService.resetPassword(
+                    request.email(),
+                    request.otp(),
+                    request.newPassword());
+            return ResponseEntity.ok().build();
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(Map.of("message", e.getReason()));
+        } catch (Exception e) {
+            log.error("Error resetting password for email: {}", request.email(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Failed to reset password. Please try again."));
+        }
+    }
+
+    // For profile change password (requires old password)
+    @PostMapping("/change-password")
+    public ResponseEntity<Void> changePassword(@RequestBody ChangePasswordRequest request, Principal principal) {
+        if (principal == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        }
+        log.info("Change password request for principal: {}", principal.getName());
+        User user = userRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        log.info("User found: {} with password hash: {}", user.getEmail(),
+                user.getPassword() != null ? user.getPassword().substring(0, 10) + "..." : "null");
+        if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
+            log.warn("Password mismatch for user: {}", user.getEmail());
+            throw new BadCredentialsException("Old password incorrect");
+        }
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        userRepository.saveAndFlush(user);
+        log.info("Password updated for user: {}", user.getEmail());
+        return ResponseEntity.ok().build();
+    }
+
 }

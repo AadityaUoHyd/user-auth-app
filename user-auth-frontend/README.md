@@ -10,3 +10,5 @@ npm i
 npm run build
 npm run dev
 ```
+
+- Now, find User-Auth-App project at http://localhost:5173

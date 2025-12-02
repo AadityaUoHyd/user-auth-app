@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
-
+import java.util.Objects;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
@@ -34,7 +34,7 @@ public class CookieService {
 
     /** Attach secure HttpOnly refresh cookie (unchanged behavior) */
     public void attachRefreshCookie(HttpServletResponse response, String value, int maxAgeSeconds) {
-        ResponseCookie.ResponseCookieBuilder builder = ResponseCookie.from(refreshCookieName, value)
+        ResponseCookie.ResponseCookieBuilder builder = ResponseCookie.from(Objects.requireNonNull(refreshCookieName), Objects.requireNonNull(value))
                 .httpOnly(true)
                 .secure(cookieSecure)
                 .path("/")
@@ -51,7 +51,7 @@ public class CookieService {
 
     /** Clear refresh cookie (unchanged behavior) */
     public void clearRefreshCookie(HttpServletResponse response) {
-        ResponseCookie.ResponseCookieBuilder builder = ResponseCookie.from(refreshCookieName, "")
+        ResponseCookie.ResponseCookieBuilder builder = ResponseCookie.from(Objects.requireNonNull(refreshCookieName), "")
                 .httpOnly(true)
                 .secure(cookieSecure)
                 .path("/")

@@ -22,19 +22,78 @@ export const refreshToken = async () => {
   return res.data;
 };
 
+export const verifyRegistration = async (data) => {
+  console.log("Sending verifyRegistration request with data:", data);
+  try {
+    const response = await api.post("/auth/verify-otp", data);
+    console.log("verifyRegistration response:", response);
+    return response;
+  } catch (error) {
+    console.error("Error in verifyRegistration:", error);
+    if (error.response) {
+      console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+      console.error("Response headers:", error.response.headers);
+    } else if (error.request) {
+      console.error("No response received:", error.request);
+    } else {
+      console.error("Error setting up request:", error.message);
+    }
+    throw error;
+  }
+};
+
+export async function sendResetOtp(email) {
+  try {
+    const response = await api.post("/auth/forgot-password", { email });
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error("Error sending reset OTP:", error);
+    return {
+      success: false,
+      error: error.response?.data?.message || "Failed to send OTP. Please try again."
+    };
+  }
+}
+
+export async function resetPassword(email, otp, newPassword) {
+  try {
+    const response = await api.post("/auth/reset-password", {
+      email,
+      otp,
+      newPassword
+    });
+    return {
+      success: true,
+      data: response.data,
+      message: "Password has been reset successfully. You can now log in with your new password."
+    };
+  } catch (error) {
+    console.error("Error resetting password:", error);
+    const errorMessage = error.response?.data?.message ||
+      error.message ||
+      "Failed to reset password. Please try again.";
+    return {
+      success: false,
+      error: errorMessage
+    };
+  }
+}
+export async function changePassword({ oldPassword, newPassword }) {
+  const res = await api.post("/auth/change-password", {
+    oldPassword,
+    newPassword,
+  });
+  return res.data;
+}
+
+
+export async function updateUserProfile(data) {
+  const res = await api.put("/auth/update-user-profile", data);
+  return res.data;
+}
+
 // PENDING TASK
-// Update user profile
-export const updateUserProfile = async (payload) => {
-  const res = await api.put("/auth/update-user-profile", payload); // adjust endpoint if different
-  return res.data;
-};
-
-// Change password
-export const changePassword = async (payload) => {
-  const res = await api.post("/auth/change-password", payload); // adjust endpoint
-  return res.data;
-};
-
 // Get billing info for current user
 export const getBillingInfo = async () => {
   const res = await api.get("/billing"); // adjust endpoint if different
@@ -45,6 +104,11 @@ export const getBillingInfo = async () => {
 export const upgradePlan = async (planId) => {
   const res = await api.post("/billing/upgrade", { planId }); // adjust endpoint if different
   return res.data;
+};
+
+// Delete current user account
+export const deleteAccount = async () => {
+  return api.delete("/auth/delete-account");
 };
 
 // Update user settings
@@ -69,8 +133,8 @@ export async function getAnalyticsData() {
 // Mock function to get projects
 export async function getProjects() {
   return [
-    { id: 1, name: "Project Alpha", description: "First project" },
-    { id: 2, name: "Project Beta", description: "Second project" },
+    { id: 1, name: "Project Knight", description: "First project" },
+    { id: 2, name: "Soya Plus", description: "Second project" },
   ];
 }
 
@@ -83,8 +147,8 @@ export async function createProject(project) {
 
 // Mock users list
 let users = [
-  { id: 1, name: "Alice", email: "alice@example.com" },
-  { id: 2, name: "Bob", email: "bob@example.com" },
+  { id: 1, name: "Amit", email: "amit@example.com" },
+  { id: 2, name: "Bobby", email: "bobby@example.com" },
 ];
 
 // Get all users

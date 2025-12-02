@@ -7,6 +7,7 @@ public record UserDto(
         String email,
         boolean enable,
         String image,
+        String mobile,
         Instant createdAt,
         Instant updatedAt
 ) {

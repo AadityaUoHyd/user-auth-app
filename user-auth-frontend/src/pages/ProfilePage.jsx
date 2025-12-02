@@ -17,8 +17,7 @@ import { User, Mail, Phone, Shield, Upload } from "lucide-react";
 
 const profileSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email"),
-  phone: z.string().optional(),
+  mobile: z.string().optional(),
 });
 
 export default function ProfilePage() {
@@ -40,7 +39,7 @@ export default function ProfilePage() {
       reset({
         name: user.name || "",
         email: user.email || "",
-        phone: user.phone || "",
+        mobile: user.mobile || "",
       });
     }
   }, [user, reset]);
@@ -63,7 +62,7 @@ export default function ProfilePage() {
       return;
     }
     try {
-      await changePassword({ currentPassword, newPassword });
+      await changePassword({ oldPassword: currentPassword, newPassword });
       toast.success("Password changed successfully!");
       setCurrentPassword("");
       setNewPassword("");
@@ -109,21 +108,19 @@ export default function ProfilePage() {
                   {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">Email (read-only)</Label>
                   <Input
                     id="email"
                     type="email"
-                    {...register("email")}
-                    disabled={!isEditing}
-                    className={errors.email ? "border-red-500" : ""}
+                    value={user?.email}
+                    disabled
                   />
-                  {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
+                  <Label htmlFor="mobile">Mobile</Label>
                   <Input
-                    id="phone"
-                    {...register("phone")}
+                    id="mobile"
+                    {...register("mobile")}
                     disabled={!isEditing}
                   />
                 </div>

@@ -22,12 +22,12 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
-
 
     private final JwtService jwtService;
 
@@ -37,17 +37,15 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-
     private final Logger logger = org.slf4j.LoggerFactory.getLogger(OAuth2SuccessHandler.class);
-
 
     @Value("${app.auth.success-redirect}")
     private String fronendRedirectURL;
 
     @Override
     @Transactional
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+            Authentication authentication) throws IOException, ServletException {
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
@@ -59,13 +57,13 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         logger.debug("OAuth2 user attributes: {}", oAuth2User.getAttributes());
 
-
         User user;
         switch (registrationId) {
             case "google" -> {
                 // Google standard claims
                 String googleId = oAuth2User.getAttributes().getOrDefault("sub", "").toString();
-                String email = oAuth2User.getAttributes().getOrDefault("email", "").toString(); // may be null if not granted
+                String email = oAuth2User.getAttributes().getOrDefault("email", "").toString(); // may be null if not
+                                                                                                // granted
                 String name = oAuth2User.getAttributes().getOrDefault("name", "").toString();
                 String image = oAuth2User.getAttributes().getOrDefault("picture", "").toString();
                 user = userService.saveUserIfNotExit(googleId, email, name, image, Provider.GOOGLE);
@@ -87,17 +85,18 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             }
         }
 
+        // String githubId = oAuth2User.getAttributes().getOrDefault("id",
+        // "").toString();
+        // String email = oAuth2User.getAttributes().getOrDefault("email",
+        // "").toString();
+        // String name = oAuth2User.getAttributes().getOrDefault("login",
+        // "").toString();
+        // String image = oAuth2User.getAttributes().getOrDefault("avatar_url",
+        // "").toString();
+        // logger.debug("OAuth2 user email: {}", email);
+        // logger.debug("OAuth2 user name: {}", name);
 
-//        String githubId = oAuth2User.getAttributes().getOrDefault("id", "").toString();
-//        String email = oAuth2User.getAttributes().getOrDefault("email", "").toString();
-//        String name = oAuth2User.getAttributes().getOrDefault("login", "").toString();
-//        String image = oAuth2User.getAttributes().getOrDefault("avatar_url", "").toString();
-//        logger.debug("OAuth2 user email: {}", email);
-//        logger.debug("OAuth2 user name: {}", name);
-
-
-//        User user = userService.saveGithubUserIfNotExist(githubId, email, name);
-
+        // User user = userService.saveGithubUserIfNotExist(githubId, email, name);
 
         // Issue tokens
         String jti = UUID.randomUUID().toString();
@@ -110,13 +109,17 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .expiresAt(Instant.now().plusSeconds(jwtService.getRefreshTtlSeconds()))
                 .build();
 
-        refreshTokenRepository.save(refreshToken1);
+        refreshTokenRepository.save(Objects.requireNonNull(refreshToken1));
 
+        // Generate JWT access and refresh tokens
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user, jti);
+        // Attach refresh token as HttpOnly cookie
         cookieService.attachRefreshCookie(response, refreshToken, (int) jwtService.getRefreshTtlSeconds());
+        // Optionally, send access token in response header for client use
+        response.addHeader("Authorization", "Bearer " + accessToken);
+        // Redirect to frontend after successful authentication
         response.sendRedirect(fronendRedirectURL);
-
 
     }
 }

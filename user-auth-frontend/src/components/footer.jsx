@@ -1,10 +1,12 @@
 import React from "react";
 import { NavLink } from "react-router";
 
-export default function Footer() {
+import { cn } from "@/lib/utils";
+
+export default function Footer({ className = "" }) {
   return (
-    <footer className="border-t bg-background/50 backdrop-blur">
-      <div className="mx-auto max-w-6xl px-4 py-8">
+    <footer className={cn("border-t bg-background/50 backdrop-blur flex-shrink-0", className)}>
+      <div className="mx-auto max-w-6xl px-4 py-6">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
 
           {/* Left Section */}
@@ -20,28 +22,28 @@ export default function Footer() {
           {/* Navigation Links */}
           <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
             <NavLink
-              to="#"
+              to="/docs"
               className="text-muted-foreground transition hover:text-foreground"
             >
               Documentation
             </NavLink>
 
             <NavLink
-              to="#"
+              to="/privacy"
               className="text-muted-foreground transition hover:text-foreground"
             >
               Privacy Policy
             </NavLink>
 
             <NavLink
-              to="#"
+              to="/terms"
               className="text-muted-foreground transition hover:text-foreground"
             >
               Terms & Conditions
             </NavLink>
 
             <NavLink
-              to="#"
+              to="/support"
               className="text-muted-foreground transition hover:text-foreground"
             >
               Support

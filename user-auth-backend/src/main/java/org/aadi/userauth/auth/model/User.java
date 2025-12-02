@@ -18,7 +18,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private  String providerId;
+    private String providerId;
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -26,19 +26,22 @@ public class User {
     private String name;
     private String password; // null for OAuth-only users
     private String image;
+    private String mobile;
 
+    @Builder.Default
     private boolean enabled = true;
+    @Builder.Default
     private Instant createdAt = Instant.now();
+    @Builder.Default
     private Instant updatedAt = Instant.now();
 
-
     @Enumerated(EnumType.STRING)
-    private  Provider provider=Provider.LOCAL;
+    @Builder.Default
+    private Provider provider = Provider.LOCAL;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @Builder.Default
     private Set<Role> roles = new HashSet<>();
 
     @PrePersist

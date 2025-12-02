@@ -3,22 +3,37 @@ server:
 
 security:
   jwt:
-    secret: ${JWT_SECRET:9f4c7ab12e0d8bcf3a1e76cd04f9b82c6ef13b02ff56a7c91d9c4b45e60bd8a1}
+    secret: ${JWT_SECRET:9f5c7ab12e0d8bcf3a1e76cd04f9b82c6ef13b02ff56a7c91d9c4b45e60bd8a1}
     issuer: ${JWT_ISSUER:user-auth-backend}
     access-ttl-seconds: ${JWT_ACCESS_TTL_SECONDS:300}       # 5 minutes
     refresh-ttl-seconds: ${JWT_REFRESH_TTL_SECONDS:2592000} # 30 days
     refresh-cookie-name: ${JWT_REFRESH_COOKIE_NAME:refresh_token}
     cookie-secure: ${JWT_COOKIE_SECURE:true}
     cookie-same-site: ${JWT_COOKIE_SAME_SITE:Lax}
+
+# Add to application.yml
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:your-mail@gmail.com}  # Your Gmail address
+    password: ${MAIL_PASSWORD:your-gmail-app-passcode}  # 16-char Gmail App Password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+        debug: false  # Set true for dev debugging
   application:
     name: user-auth-backend
 
   #PostgreSQL db configuration
   datasource:
-    url: ${DB_URL:xyz}
-    username: ${DB_USER:xyz}
-    password: ${DB_PASSWORD:xyz}
+    url: ${DB_URL:your-db-url}
+    username: ${DB_USER:your-db-username}
+    password: ${DB_PASSWORD:your-db-password}
 
     hikari:
       pool-name: neon-hikari
@@ -45,15 +60,15 @@ spring:
       client:
         registration:
           github:
-            client-id: ${GITHUB_CLIENT_ID:Ov23li53ZHIoYXdenDE7}
-            client-secret: ${GITHUB_CLIENT_SECRET:xyz}
+            client-id: ${GITHUB_CLIENT_ID:your-github-client-id}
+            client-secret: ${GITHUB_CLIENT_SECRET:your-github-client-secret}
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope:
               - user:email
               - read:user
           google:
-            client-id: ${GOOGLE_CLIENT_ID:724785788822-gq1h4lv7dv6db52fdrqmh41ra3o6u0gq.apps.googleusercontent.com}
-            client-secret: ${GOOGLE_CLIENT_SECRET:xyz}
+            client-id: ${GOOGLE_CLIENT_ID:your-google-client-id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:your-google-client-secret}
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope:
               - email
@@ -67,10 +82,10 @@ spring:
             user-name-attribute: id
 
 app:
+  password:
+    min-length: ${APP_PASSWORD_MIN_LENGTH:8}
   cors:
     allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173}
   auth:
     success-redirect: ${AUTH_SUCCESS_REDIRECT:http://localhost:5173/auth/success}
     failure-redirect: ${AUTH_FAILURE_REDIRECT:http://localhost:5173/auth/failure}
-
-logging.level.org.aadi.auth: DEBUG
