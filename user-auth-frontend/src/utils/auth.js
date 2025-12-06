@@ -28,15 +28,12 @@ export const useAuthStore = create((set) => ({
       // This will succeed if the access token (or cookie) is still valid
 
       if (token == null) {
-        console.log("No token found");
         throw new Error("No token");
       }
       const response = await api.get("/auth/me");
-      console.log("Current user:", response.data);
       set({ user: response.data, status: "authenticated" });
     } catch (e) {
       // Token might be expired or invalid — clear it
-      console.log("Failed to fetch current user, logging out");
       localStorage.removeItem(TOKEN_KEY);
       set({ accessToken: null, user: null, status: "anonymous" });
     }

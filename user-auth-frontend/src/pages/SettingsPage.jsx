@@ -153,13 +153,13 @@ export default function SettingsPage() {
 
         {/* Actions */}
         <div className="flex justify-between">
-          <Button variant="destructive" onClick={handleDeleteAccount} className="gap-2">
+          <Button onClick={handleDeleteAccount} className="gap-2 text-white bg-red-900 hover:bg-red-500">
             <Trash2 className="h-4 w-4" />
             Delete Account
           </Button>
-          <Button onClick={handleSave} className="gap-2">
-            <Save className="h-4 w-4" />
-            Save Settings
+          <Button onClick={handleSave} className="gap-2 hover:bg-green-500">
+            <Save className="h-4 w-4"/>
+            Save
           </Button>
         </div>
       </div>

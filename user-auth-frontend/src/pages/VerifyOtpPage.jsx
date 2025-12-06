@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Shield } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Mail, Shield, AlertCircle } from "lucide-react";
 import AuthLayout from "./auth.layout";
 import { verifyRegistration } from "@/services/auth.service";  // New service fn
 import toast from "react-hot-toast";
@@ -14,6 +15,7 @@ export default function VerifyOtpPage() {
   const email = searchParams.get("email");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   if (!email) {
@@ -24,20 +26,14 @@ export default function VerifyOtpPage() {
   async function onSubmit(e) {
     e.preventDefault();
     setLoading(true);
-    console.log("Submit clicked. Email:", email, "OTP:", otp);
+    setError(null);
     try {
-      console.log("Calling verifyRegistration...");
-      await verifyRegistration({
-        email: email.trim(),
-        otp: otp.trim()
-      });
-      toast.success("Email verified! You can now log in.");
-      console.log("Verification successful, navigating to login");
+      await verifyRegistration({ email, otp });
+      toast.success("Registration verified successfully!");
       navigate("/login");
     } catch (err) {
       console.error("Verification error:", err);
-      setError('Invalid OTP. Please try again.');
-      toast.error(err?.response?.data?.message || "Invalid OTP");
+      setError(err?.response?.data?.message || "Invalid OTP. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -62,6 +58,15 @@ export default function VerifyOtpPage() {
             />
           </div>
         </div>
+
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Verification Failed</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? "Verifying…" : "Verify OTP"}
         </Button>

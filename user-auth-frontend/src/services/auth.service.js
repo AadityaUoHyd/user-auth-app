@@ -23,17 +23,16 @@ export const refreshToken = async () => {
 };
 
 export const verifyRegistration = async (data) => {
-  console.log("Sending verifyRegistration request with data:", data);
   try {
     const response = await api.post("/auth/verify-otp", data);
-    console.log("verifyRegistration response:", response);
     return response;
   } catch (error) {
-    console.error("Error in verifyRegistration:", error);
     if (error.response) {
-      console.error("Response data:", error.response.data);
-      console.error("Response status:", error.response.status);
-      console.error("Response headers:", error.response.headers);
+      if (error.response.data) {
+        console.error("Response data:", error.response.data);
+        console.error("Response status:", error.response.status);
+        console.error("Response headers:", error.response.headers);
+      }
     } else if (error.request) {
       console.error("No response received:", error.request);
     } else {
@@ -141,7 +140,6 @@ export async function getProjects() {
 // Mock function to create a new project
 export async function createProject(project) {
   // Normally you'd call a backend API here
-  console.log("Creating project:", project);
   return { id: Math.floor(Math.random() * 1000), ...project };
 }
 

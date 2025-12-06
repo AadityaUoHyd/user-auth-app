@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Code, Download, ExternalLink, Copy } from "lucide-react";
+import { baseURL } from "@/utils/ApiClient";
 import { Helmet } from "react-helmet";
 import docsImg from "@/assets/docs.png";
 export default function DocumentationPage() {
@@ -34,11 +35,15 @@ export default function DocumentationPage() {
               <li>Register a user and test login/OAuth flows.</li>
             </ol>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <Download className="mr-2 h-4 w-4" /> Download Starter Kit
+              <Button variant="ghost" size="sm" asChild>
+                <a href={`${baseURL.replace('/api/v1', '')}/swagger-ui.html`} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="mr-2 h-4 w-4" /> API Docs (Swagger)
+                </a>
               </Button>
-              <Button variant="ghost" size="sm">
-                <ExternalLink className="mr-2 h-4 w-4" /> API Docs (Swagger)
+              <Button variant="outline" size="sm" asChild>
+                <a href="https://github.com/AadityaUoHyd/user-auth-app/archive/refs/heads/main.zip" target="_blank" rel="noopener noreferrer">
+                  <Download className="mr-2 h-4 w-4" /> Download Starter Kit
+                </a>
               </Button>
             </div>
           </CardContent>

@@ -1,30 +1,40 @@
-import { refreshToken } from "@/services/auth.service";
 import React, { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import { useAuthStore } from "@/utils/auth";
+import { refreshToken } from "@/services/auth.service";
+
 function OAuthSuccessPage() {
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
-  const boostrap = useAuthStore((state) => state.bootstrap);
+  const set = useAuthStore((state) => state.set);
+  const bootstrap = useAuthStore((state) => state.bootstrap);
   const navigate = useNavigate();
+  const TOKEN_KEY = useAuthStore((state) => state.TOKEN_KEY);
+
   useEffect(() => {
-    async function fetchNewToken() {
+    async function handleOAuthSuccess() {
       try {
+        // First, use the refresh token cookie to get a new access token
         const tokens = await refreshToken();
-        console.log("New tokens:", tokens);
+        
+        // Store the access token
+        localStorage.setItem(TOKEN_KEY, tokens.accessToken);
         setAccessToken(tokens.accessToken);
-        await boostrap();
+        
+        // Now bootstrap the user session
+        await bootstrap();
+        
         toast.success("Successfully authenticated!");
         navigate("/dashboard");
       } catch (err) {
-        console.error("Error fetching new tokens:", err);
+        console.error("OAuth authentication error:", err);
         toast.error("Failed to authenticate. Please log in again.");
         navigate("/login");
       }
     }
 
-    fetchNewToken();
-  }, []);
+    handleOAuthSuccess();
+  }, [setAccessToken, set, bootstrap, navigate, TOKEN_KEY]);
 
   return (
     <div>

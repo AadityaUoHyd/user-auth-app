@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -44,6 +45,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 function DashboardComponent() {
+  const [showMessage, setShowMessage] = useState(false);
+
+  const handleCreate = () => {
+    setShowMessage(true);
+  };
+
+  const handleClose = () => {
+    setShowMessage(false);
+  };
+
 return (<>
     <div className="flex items-center justify-between gap-2 m-4">
                   <div>
@@ -60,24 +71,42 @@ return (<>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>Create new item</DialogTitle>
+                        <DialogTitle>{showMessage ? "Item Created" : "Create new item"}</DialogTitle>
                         <DialogDescription>
-                          Fill the form below and hit create.
+                          {showMessage 
+                            ? "Your item has been created successfully (dummy mode)." 
+                            : "Fill the form below and hit create."
+                          }
                         </DialogDescription>
                       </DialogHeader>
-                      <div className="grid gap-3 py-3">
-                        <div className="grid gap-1">
-                          <Label htmlFor="title">Title</Label>
-                          <Input id="title" placeholder="Enter title" />
-                        </div>
-                        <div className="grid gap-1">
-                          <Label htmlFor="desc">Description</Label>
-                          <Input id="desc" placeholder="Short description" />
-                        </div>
-                      </div>
-                      <DialogFooter>
-                        <Button type="button">Create</Button>
-                      </DialogFooter>
+                      {!showMessage ? (
+                        <>
+                          <div className="grid gap-3 py-3">
+                            <div className="grid gap-1">
+                              <Label htmlFor="title">Title</Label>
+                              <Input id="title" placeholder="Enter title" />
+                            </div>
+                            <div className="grid gap-1">
+                              <Label htmlFor="desc">Description</Label>
+                              <Input id="desc" placeholder="Short description" />
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button type="button" onClick={handleCreate}>Create</Button>
+                          </DialogFooter>
+                        </>
+                      ) : (
+                        <>
+                          <div className="py-3">
+                            <p className="text-sm text-muted-foreground">
+                              This is dummy implementation of create new item. thanks for testing.
+                            </p>
+                          </div>
+                          <DialogFooter>
+                            <Button type="button" onClick={handleClose}>Close</Button>
+                          </DialogFooter>
+                        </>
+                      )}
                     </DialogContent>
                   </Dialog>
                 </div>

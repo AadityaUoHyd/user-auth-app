@@ -4,7 +4,7 @@ import { CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Mail, Lock, LogIn, AlertCircleIcon } from "lucide-react";
+import { Mail, Lock, LogIn, AlertCircleIcon, Eye, EyeOff } from "lucide-react";
 import AuthLayout from "./auth.layout.jsx";
 import OAuthButtons from "@/components/auth/oauth.buttons.jsx";
 import { NavLink, useNavigate } from "react-router";
@@ -15,6 +15,7 @@ import { Alert, AlertTitle } from "@/components/ui/alert.jsx";
 export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const login = useAuthStore((state) => state.login);
@@ -28,7 +29,6 @@ export function LoginPage() {
       navigate("/dashboard");
       toast.success("Logged in successfully");
     } catch (err) {
-      console.log(err);
       setError(err?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
@@ -69,14 +69,22 @@ export function LoginPage() {
             />
             <Input
               id="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="********"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="pl-9"
+              className="pl-9 pr-9"
               autoComplete="current-password"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
           </div>
         </div>
 

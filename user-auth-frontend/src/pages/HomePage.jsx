@@ -1,5 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { FaJava, FaReact } from 'react-icons/fa';
+import { SiSpringboot, SiPostgresql, SiSwagger } from 'react-icons/si'; 
 import {
   Card,
   CardContent,
@@ -31,8 +33,10 @@ import {
   LogIn,
   Zap,
   Code,
+  ExternalLink,
 } from "lucide-react";
 import { Helmet } from "react-helmet";
+import { baseURL } from "@/utils/ApiClient";
 
 function HomePage() {
   return (
@@ -137,11 +141,14 @@ function HomePage() {
       {/* Integrations */}
       <section className="py-12 bg-muted/10">
         <div className="mx-auto max-w-7xl px-4 text-center">
-          <h3 className="text-xl font-semibold text-foreground mb-8">Works with your stack</h3>
+          <h3 className="text-xl font-semibold text-foreground mb-1">Given source code works with below tech stack</h3>
+          <h5 className="text-xl font-semibold text-foreground mb-8">(You can customize it)</h5>
           <div className="flex flex-wrap justify-center items-center gap-12 text-2xl text-muted-foreground">
-            <Code className="h-8 w-8" />
-            <Zap className="h-8 w-8" />
-            <Users className="h-8 w-8" />
+            <FaJava size={30} title="Java"/>
+            <SiSpringboot size={30} title="Spring Boot"/>
+            <SiPostgresql size={30} title="PostgreSQL"/>
+            <FaReact size={30} title="React"/>
+            <SiSwagger size={30} title="Swagger" />
           </div>
         </div>
       </section>
@@ -191,13 +198,13 @@ function HomePage() {
             avatar="https://i.pravatar.cc/64?img=53"
           />
           <Testimonial
-            name="Sana Ganguly"
+            name="Sana Rao"
             role="Product Designer, NovaTech"
             quote="The UI feels modern and intuitive. Users immediately understood the login flow."
             avatar="https://i.pravatar.cc/64?img=31"
           />
           <Testimonial
-            name="Vikram Rao Prasad"
+            name="Vikram Jha"
             role="CEO, DataSphere"
             quote="Setup was quick and the reliability has been rock-solid for our team."
             avatar="https://i.pravatar.cc/64?img=51"
@@ -233,6 +240,29 @@ function HomePage() {
                   <AccordionContent className="text-muted-foreground/90">
                     Absolutely. Use our APIs with your design system or these
                     shadcn templates.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="3" className="border-border/10">
+                  <AccordionTrigger className="hover:no-underline text-foreground/90">
+                    How do I explore the API?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground/90">
+                    <div className="space-y-3">
+                      <p>
+                        Our interactive Swagger UI lets you explore and test all endpoints.
+                        Built with SpringDoc OpenAPI for comprehensive API documentation.
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary">JWT Auth</Badge>
+                        <Badge variant="secondary">OAuth2</Badge>
+                        <Badge variant="secondary">Interactive</Badge>
+                      </div>
+                      <Button variant="outline" size="sm" asChild className="mt-2">
+                        <a href={`${baseURL.replace('/api/v1', '')}/swagger-ui.html`} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="mr-2 h-4 w-4" /> Open API Docs
+                        </a>
+                      </Button>
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
