@@ -21,6 +21,7 @@ public class EmailService {
             message.setTo(to);
             message.setSubject("User Auth App - " + purpose);
             message.setText("Your OTP is: " + otp + "\nIt expires in 10 minutes.\nDo not share this code.");
+            
             mailSender.send(message);
             log.info("OTP email sent to {}", to);
         } catch (Exception e) {

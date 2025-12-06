@@ -30,6 +30,40 @@ public class AuthService {
     @Value("${app.password.min-length:8}")
     private int minPasswordLength;
 
+    /**
+     * Validates password according to security requirements
+     */
+    public void validatePassword(String password) {
+        if (password == null || password.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password is required");
+        }
+        
+        if (password.length() < minPasswordLength) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                String.format("Password must be at least %d characters long", minPasswordLength));
+        }
+        
+        if (!password.matches(".*[A-Z].*")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                "Password must contain at least one uppercase letter (A-Z)");
+        }
+        
+        if (!password.matches(".*[a-z].*")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                "Password must contain at least one lowercase letter (a-z)");
+        }
+        
+        if (!password.matches(".*\\d.*")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                "Password must contain at least one digit (0-9)");
+        }
+        
+        if (!password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                "Password must contain at least one special character (!@#$%^&*()_+-=[]{};':\"\\|,.<>/?)");
+        }
+    }
+
     public RegisterResponse register(RegisterRequest request) {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is required");
@@ -39,6 +73,13 @@ public class AuthService {
         }
         if (userRepository.existsByEmail(request.getEmail().trim().toLowerCase())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered");
+        }
+
+        // Validate password for non-OAuth users
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            validatePassword(request.getPassword());
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password is required for registration");
         }
 
         String encoded = null;
@@ -52,6 +93,7 @@ public class AuthService {
                 .provider(Provider.LOCAL)
                 .password(encoded) // null allowed for OAuth-only users
                 .image(request.getImage())
+                .mobile(request.getMobile())
                 .enabled(true)
                 .build();
 
@@ -65,6 +107,7 @@ public class AuthService {
                 .email(saved.getEmail())
                 .name(saved.getName())
                 .image(saved.getImage())
+                .mobile(saved.getMobile())
                 .enabled(saved.isEnabled())
                 .createdAt(saved.getCreatedAt())
                 .updatedAt(saved.getUpdatedAt())

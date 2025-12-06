@@ -18,6 +18,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -51,6 +52,22 @@ public class GlobalExceptionHandler {
         System.out.println(status.value());
         System.out.println(ex.getClass().getName());
         ApiError body = ApiError.of(status, "Authentication error", safeMessage(ex), request.getRequestURI());
+        return ResponseEntity.status(status)
+                .header(HttpHeaders.CACHE_CONTROL, "no-store")
+                .header("Pragma", "no-cache")
+                .body(body);
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ApiError> handleResponseStatusException(ResponseStatusException ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
+        String message = ex.getReason();
+        
+        System.out.println(status.value());
+        System.out.println("ResponseStatusException: " + ex.getClass().getName());
+        System.out.println("Reason: " + message);
+        
+        ApiError body = ApiError.of(status, status.getReasonPhrase(), message, request.getRequestURI());
         return ResponseEntity.status(status)
                 .header(HttpHeaders.CACHE_CONTROL, "no-store")
                 .header("Pragma", "no-cache")

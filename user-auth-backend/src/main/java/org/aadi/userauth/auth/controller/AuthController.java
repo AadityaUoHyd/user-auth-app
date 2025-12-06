@@ -271,11 +271,21 @@ public class AuthController {
         log.info("Change password request for principal: {}", principal.getName());
         User user = userRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        log.info("User found: {} with password hash: {}", user.getEmail(),
-                user.getPassword() != null ? user.getPassword().substring(0, 10) + "..." : "null");
+        
+        // Check if user is OAuth2 user (password is null)
+        if (user.getPassword() == null) {
+            log.warn("OAuth2 user attempted password change: {}", user.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                "Password change is not available for OAuth2 users. Please use your OAuth provider (Google/GitHub) to manage your account.");
+        }
+        
+        // Validate new password
+        authService.validatePassword(request.newPassword());
+        
+        // Validate old password
         if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
             log.warn("Password mismatch for user: {}", user.getEmail());
-            throw new BadCredentialsException("Old password incorrect");
+            throw new BadCredentialsException("Old password is incorrect");
         }
         user.setPassword(passwordEncoder.encode(request.newPassword()));
         userRepository.saveAndFlush(user);

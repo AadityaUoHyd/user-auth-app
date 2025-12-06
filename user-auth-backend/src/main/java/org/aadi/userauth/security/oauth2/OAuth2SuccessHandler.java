@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -37,8 +36,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-    private final Logger logger = org.slf4j.LoggerFactory.getLogger(OAuth2SuccessHandler.class);
-
     @Value("${app.auth.success-redirect}")
     private String fronendRedirectURL;
 
@@ -54,8 +51,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         if (authentication instanceof OAuth2AuthenticationToken token) {
             registrationId = token.getAuthorizedClientRegistrationId();
         }
-
-        logger.debug("OAuth2 user attributes: {}", oAuth2User.getAttributes());
 
         User user;
         switch (registrationId) {
@@ -84,19 +79,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 throw new RuntimeException("Unsupported provider: " + registrationId);
             }
         }
-
-        // String githubId = oAuth2User.getAttributes().getOrDefault("id",
-        // "").toString();
-        // String email = oAuth2User.getAttributes().getOrDefault("email",
-        // "").toString();
-        // String name = oAuth2User.getAttributes().getOrDefault("login",
-        // "").toString();
-        // String image = oAuth2User.getAttributes().getOrDefault("avatar_url",
-        // "").toString();
-        // logger.debug("OAuth2 user email: {}", email);
-        // logger.debug("OAuth2 user name: {}", name);
-
-        // User user = userService.saveGithubUserIfNotExist(githubId, email, name);
 
         // Issue tokens
         String jti = UUID.randomUUID().toString();

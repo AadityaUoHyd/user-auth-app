@@ -82,7 +82,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                  "/api/v1/auth/refresh",
                  "/api/v1/auth/verify-otp",
                  "/api/v1/auth/forgot-password",
-                 "/api/v1/auth/reset-password" -> true;
+                 "/api/v1/auth/reset-password",
+                 "/api/v1/auth/logout" -> true;
             default -> false; // run filter for every other path, including /me and /change-password
         };
     }
