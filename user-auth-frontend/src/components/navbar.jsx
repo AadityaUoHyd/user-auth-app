@@ -151,19 +151,22 @@ export default function Navbar() {
 
                 <Separator />
 
-                <NavLink to="/login" className="block" aria-label="Login">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start gap-2"
-                  >
-                    Login
-                  </Button>
-                </NavLink>
-                <NavLink to="/register" className="block" aria-label="Register">
-                  <Button className="w-full justify-start gap-2">
-                    Register
-                  </Button>
-                </NavLink>
+                {!authenticated && (
+                  <>
+                    <NavLink to="/login" className="block" aria-label="Login">
+                      <Button
+                        className="w-full justify-start gap-2"
+                      >
+                        Login
+                      </Button>
+                    </NavLink>
+                    <NavLink to="/register" className="block" aria-label="Register">
+                      <Button className="w-full justify-start gap-2">
+                        Register
+                      </Button>
+                    </NavLink>
+                  </>
+                )}
               </div>
             </SheetContent>
           </Sheet>

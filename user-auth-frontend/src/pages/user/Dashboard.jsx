@@ -91,39 +91,41 @@ function Dashboard() {
                 <SheetContent side="left" className="w-72 p-0">
                   <SheetHeader className="px-4 py-3">
                     <SheetTitle className="flex items-center gap-2">
-                      <div className="h-6 w-6 rounded bg-gradient-to-br from-primary to-primary/40" />
+                      <div className="h-6 w-6 text-primary">
+                        <UserCog className="h-6 w-6" />
+                      </div>
                       <span>Auth Admin</span>
                     </SheetTitle>
                   </SheetHeader>
                   <Separator />
                   <nav className="p-3 space-y-1">
                     <NavItem
-                      href="#"
+                      to="/dashboard"
                       icon={<Home className="h-4 w-4" />}
                       label="Overview"
                       active
                       onClick={() => setOpen(false)}
                     />
                     <NavItem
-                      href="#"
+                      to="/dashboard/analytics"
                       icon={<BarChart2 className="h-4 w-4" />}
                       label="Analytics"
                       onClick={() => setOpen(false)}
                     />
                     <NavItem
-                      href="#"
+                      to="/dashboard/customers"
                       icon={<Users className="h-4 w-4" />}
                       label="Customers"
                       onClick={() => setOpen(false)}
                     />
                     <NavItem
-                      href="#"
+                      to="/dashboard/projects"
                       icon={<FolderGit2 className="h-4 w-4" />}
                       label="Projects"
                       onClick={() => setOpen(false)}
                     />
                     <NavItem
-                      href="/dashboard/settings"
+                      to="/dashboard/settings"
                       icon={<Settings className="h-4 w-4" />}
                       label="Settings"
                       onClick={() => setOpen(false)}
@@ -192,7 +194,7 @@ function UserMenu() {
               alt="user"
             />
             <AvatarFallback className="flex items-center justify-center bg-gray-100">
-                <User className="h-4 w-4 text-gray-500" />
+              <User className="h-4 w-4 text-gray-500" />
             </AvatarFallback>
           </Avatar>
           <span className="hidden sm:inline text-sm">{user?.name}</span>
@@ -206,11 +208,11 @@ function UserMenu() {
         <DropdownMenuItem><Link to="/dashboard/settings">Settings</Link></DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-                  className="text-red-600 hover:text-red-300 flex items-center cursor-pointer"  // Add flex + cursor for better UX
-                  onClick={logout}  // Add this onClick
-                >
-                  <LogOut className="mr-2 h-4 w-4" /> Logout
-                </DropdownMenuItem>
+          className="text-red-600 hover:text-red-300 flex items-center cursor-pointer"  // Add flex + cursor for better UX
+          onClick={logout}  // Add this onClick
+        >
+          <LogOut className="mr-2 h-4 w-4" /> Logout
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

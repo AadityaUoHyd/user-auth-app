@@ -127,3 +127,156 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Mobile and Tablet Responsive Styles */
+@layer utilities {
+  /* Mobile devices (up to 640px) */
+  @media (max-width: 640px) {
+    /* Auth Layout - Mobile */
+    .auth-layout {
+      @apply p-4;
+    }
+    
+    .auth-layout .container {
+      @apply max-w-full mx-auto;
+    }
+    
+    /* Forms - Mobile */
+    .form-grid {
+      @apply grid-cols-1 gap-3;
+    }
+    
+    .form-input {
+      @apply text-base;
+    }
+    
+    /* Cards - Mobile */
+    .card-responsive {
+      @apply rounded-lg;
+    }
+    
+    /* Buttons - Mobile */
+    .btn-responsive {
+      @apply text-base py-3 px-4;
+    }
+    
+    /* Navigation - Mobile */
+    .nav-responsive {
+      @apply flex-col gap-2;
+    }
+    
+    /* Dashboard - Mobile */
+    .dashboard-grid {
+      @apply grid-cols-1;
+    }
+    
+    .sidebar-mobile {
+      @apply fixed inset-y-0 left-0 z-50 w-64 transform -translate-x-full transition-transform duration-300 ease-in-out;
+    }
+    
+    .sidebar-mobile.open {
+      @apply translate-x-0;
+    }
+    
+    /* Profile Page - Mobile */
+    .profile-avatar {
+      @apply h-12 w-12;
+    }
+    
+    .profile-grid {
+      @apply grid-cols-1;
+    }
+    
+    /* Tables - Mobile */
+    .table-mobile {
+      @apply text-sm;
+    }
+    
+    .table-mobile th,
+    .table-mobile td {
+      @apply px-2 py-1;
+    }
+    
+    /* Charts - Mobile */
+    .chart-container {
+      @apply h-64;
+    }
+    
+    /* Modals - Mobile */
+    .modal-responsive {
+      @apply mx-4 max-w-full;
+    }
+    
+    /* Alerts - Mobile */
+    .alert-mobile {
+      @apply text-sm p-3;
+    }
+  }
+  
+  /* Tablet devices (641px to 1024px) */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    /* Auth Layout - Tablet */
+    .auth-layout {
+      @apply p-6;
+    }
+    
+    .auth-layout .container {
+      @apply max-w-2xl mx-auto;
+    }
+    
+    /* Forms - Tablet */
+    .form-grid {
+      @apply grid-cols-2 gap-4;
+    }
+    
+    /* Dashboard - Tablet */
+    .dashboard-grid {
+      @apply grid-cols-2;
+    }
+    
+    /* Profile Page - Tablet */
+    .profile-avatar {
+      @apply h-14 w-14;
+    }
+    
+    .profile-grid {
+      @apply grid-cols-2;
+    }
+    
+    /* Charts - Tablet */
+    .chart-container {
+      @apply h-80;
+    }
+    
+    /* Sidebar - Tablet */
+    .sidebar-tablet {
+      @apply w-56;
+    }
+  }
+  
+  /* Small height adjustments for mobile */
+  @media (max-height: 600px) {
+    .auth-layout {
+      @apply py-2;
+    }
+    
+    .modal-responsive {
+      @apply my-2;
+    }
+  }
+  
+  /* Touch-friendly targets for mobile */
+  @media (max-width: 640px) {
+    .touch-target {
+      @apply min-h-[44px] min-w-[44px];
+    }
+    
+    .button-group {
+      @apply flex-col gap-2;
+    }
+    
+    .button-group .btn-responsive {
+      @apply w-full;
+    }
+  }
+}

@@ -107,7 +107,7 @@ export default function RegisterPage() {
       <Helmet>
         <title>Register Here | User Auth App</title>
       </Helmet>
-      <form onSubmit={onSubmit} className="grid gap-4">
+      <form onSubmit={onSubmit} className="form-grid grid gap-4">
         <div className="grid gap-2">
           <Label htmlFor="name">Name</Label>
           <div className="relative">
@@ -121,26 +121,26 @@ export default function RegisterPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="pl-9"
+              className="form-input pl-9"
             />
           </div>
         </div>
         <div className="grid gap-2">
-                  <Label htmlFor="name">Mobile</Label>
-                  <div className="relative">
-                    <Phone
-                      className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
-                      aria-hidden
-                    />
-                    <Input
-                      id="mobile"
-                      placeholder="Your mobile number"
-                      value={mobile}
-                      onChange={(e) => setMobile(e.target.value)}
-                      required
-                      className="pl-9"
-                    />
-                  </div>
+          <Label htmlFor="mobile">Mobile</Label>
+          <div className="relative">
+            <Phone
+              className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+              aria-hidden
+            />
+            <Input
+              id="mobile"
+              placeholder="Your mobile number"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+              required
+              className="form-input pl-9"
+            />
+          </div>
         </div>
         <div className="grid gap-2">
           <Label htmlFor="reg-email">Email</Label>
@@ -156,7 +156,7 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="pl-9"
+              className="form-input pl-9 pr-9"
               autoComplete="email"
             />
           </div>

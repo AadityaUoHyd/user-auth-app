@@ -27,19 +27,19 @@ import {
 
 export default function AuthLayout({ title, description, children }) {
   return (
-    <div className=" flex items-center justify-center p-4 lg:mt-7">
-      <Card className="w-full  max-w-md shadow-xl border-border/60 backdrop-blur-sm">
+    <div className="auth-layout flex items-center justify-center p-4 lg:mt-7">
+      <Card className="card-responsive w-full max-w-md shadow-xl border-border/60 backdrop-blur-sm">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-semibold tracking-tight">
+          <CardTitle className="text-xl lg:text-2xl font-semibold tracking-tight">
             {title}
           </CardTitle>
           {description ? (
-            <CardDescription className="text-muted-foreground">
+            <CardDescription className="text-sm lg:text-base text-muted-foreground">
               {description}
             </CardDescription>
           ) : null}
         </CardHeader>
-        <CardContent>{children}</CardContent>
+        <CardContent className="p-4 lg:p-6">{children}</CardContent>
       </Card>
     </div>
   );

@@ -34,13 +34,13 @@ export default function DocumentationPage() {
               <li>Run frontend: `npm run dev` (port 5173).</li>
               <li>Register a user and test login/OAuth flows.</li>
             </ol>
-            <div className="flex gap-2">
-              <Button variant="ghost" size="sm" asChild>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button variant="ghost" size="sm" asChild className="w-full sm:w-auto">
                 <a href={`${baseURL.replace('/api/v1', '')}/swagger-ui.html`} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="mr-2 h-4 w-4" /> API Docs (Swagger)
                 </a>
               </Button>
-              <Button variant="outline" size="sm" asChild>
+              <Button variant="outline" size="sm" asChild className="w-full sm:w-auto">
                 <a href="https://github.com/AadityaUoHyd/user-auth-app/archive/refs/heads/main.zip" target="_blank" rel="noopener noreferrer">
                   <Download className="mr-2 h-4 w-4" /> Download Starter Kit
                 </a>

@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { FaJava, FaReact } from 'react-icons/fa';
-import { SiSpringboot, SiPostgresql, SiSwagger } from 'react-icons/si'; 
+import { SiSpringboot, SiPostgresql, SiSwagger } from 'react-icons/si';
 import {
   Card,
   CardContent,
@@ -34,6 +34,8 @@ import {
   Zap,
   Code,
   ExternalLink,
+  Mail,
+  Settings,
 } from "lucide-react";
 import { Helmet } from "react-helmet";
 import { baseURL } from "@/utils/ApiClient";
@@ -59,30 +61,13 @@ function HomePage() {
 
           <p className="mt-6 max-w-3xl mx-auto text-lg leading-relaxed text-muted-foreground">
             Password, OTP, and social sign-in with token refresh baked in.
-            Drop-in UI, clean APIs, and production-grade security.
-          </p>
-
-          <div className="mt-8 flex flex-col sm:flex-row flex-wrap justify-center gap-4">
-            <Link to="/register">
-              <Button size="lg" className="group shadow-lg shadow-primary/10 hover:shadow-primary/20 transition-shadow">
-                Get started free <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-            <Link to="/login">
-              <Button variant="outline" size="lg" className="border-border hover:border-primary/50">
-                Login
-              </Button>
-            </Link>
-          </div>
-          <p className="mt-4 text-sm text-muted-foreground">
-            No credit card required · 30-days trial
           </p>
 
           <img
-                      src="/logo.png"
-                      alt="Logo"
-                      className="inline-block h-100 w-100 rounded-md object-cover m-6"
-                    />
+            src="/logo.png"
+            alt="Logo"
+            className="inline-block h-24 w-24 rounded-md object-cover m-6"
+          />
         </div>
       </section>
 
@@ -92,7 +77,7 @@ function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <StatCard icon={<Users className="h-8 w-8 text-primary" />} title="10K+" label="Active Users" />
             <StatCard icon={<LogIn className="h-8 w-8 text-primary" />} title="99.9%" label="Uptime" />
-            <StatCard icon={<Zap className="h-8 w-8 text-primary" />} title="50+" label="Integrations" />
+            <StatCard icon={<Shield className="h-8 w-8 text-primary" />} title="256-bit" label="Encryption" />
           </div>
         </div>
       </section>
@@ -109,32 +94,47 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-20 bg-background/50">
-        <div className="mx-auto max-w-7xl px-4 text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-foreground">
-            Why choose User Auth App?
-          </h2>
-          <p className="mt-4 max-w-2xl mx-auto text-xl text-muted-foreground">
-            Everything you need to plug authentication into your product.
-          </p>
-        </div>
-        <div className="mx-auto mt-12 grid max-w-7xl gap-6 sm:grid-cols-2 lg:grid-cols-3 px-4">
-          <Feature
-            icon={<Lock className="h-5 w-5 text-primary" />}
-            title="Secure by default"
-            desc="httpOnly cookies, short-lived JWTs, and sane defaults."
-          />
-          <Feature
-            icon={<Fingerprint className="h-5 w-5 text-primary" />}
-            title="MFA & OTP"
-            desc="Email/SMS OTP, TOTP, and backup codes to keep accounts safe."
-          />
-          <Feature
-            icon={<KeyRound className="h-5 w-5 text-primary" />}
-            title="Social sign-in"
-            desc="Google, GitHub, Apple, and more with one config."
-          />
+      {/* Features Grid */}
+      <section className="py-16">
+        <div className="mx-auto max-w-6xl px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold tracking-tight mb-4">Everything you need for secure authentication</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Built with modern security standards and best practices in mind.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Feature
+              icon={<Shield className="h-6 w-6" />}
+              title="Secure Authentication"
+              desc="JWT-based authentication with refresh tokens and secure cookie handling."
+            />
+            <Feature
+              icon={<Users className="h-6 w-6" />}
+              title="OAuth2 Integration"
+              desc="Support for Google, GitHub, and other OAuth2 providers."
+            />
+            <Feature
+              icon={<Mail className="h-6 w-6" />}
+              title="Email Verification"
+              desc="OTP-based email verification for account registration and password reset."
+            />
+            <Feature
+              icon={<Lock className="h-6 w-6" />}
+              title="Password Security"
+              desc="Strong password policies with bcrypt encryption and secure storage."
+            />
+            <Feature
+              icon={<Settings className="h-6 w-6" />}
+              title="User Management"
+              desc="Complete user profile management with role-based access control."
+            />
+            <Feature
+              icon={<Shield className="h-6 w-6" />}
+              title="API Security"
+              desc="RESTful API with comprehensive security measures and CORS support."
+            />
+          </div>
         </div>
       </section>
 
@@ -144,10 +144,10 @@ function HomePage() {
           <h3 className="text-xl font-semibold text-foreground mb-1">Given source code works with below tech stack</h3>
           <h5 className="text-xl font-semibold text-foreground mb-8">(You can customize it)</h5>
           <div className="flex flex-wrap justify-center items-center gap-12 text-2xl text-muted-foreground">
-            <FaJava size={30} title="Java"/>
-            <SiSpringboot size={30} title="Spring Boot"/>
-            <SiPostgresql size={30} title="PostgreSQL"/>
-            <FaReact size={30} title="React"/>
+            <FaJava size={30} title="Java" />
+            <SiSpringboot size={30} title="Spring Boot" />
+            <SiPostgresql size={30} title="PostgreSQL" />
+            <FaReact size={30} title="React" />
             <SiSwagger size={30} title="Swagger" />
           </div>
         </div>

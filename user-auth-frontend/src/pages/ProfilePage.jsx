@@ -123,21 +123,21 @@ export default function ProfilePage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Avatar className="h-16 w-16">
+              <Avatar className="profile-avatar h-16 w-16">
                 <AvatarImage src={user?.image} alt={user?.name} />
-                <AvatarFallback className="h-16 w-16 bg-muted">
+                <AvatarFallback className="profile-avatar bg-muted">
                   <User className="h-8 w-8" />
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="text-2xl font-semibold">{user?.name}</p>
+                <p className="text-xl lg:text-2xl font-semibold">{user?.name}</p>
                 <Badge variant="secondary">{user?.role || "User"}</Badge>
               </div>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onProfileSubmit)} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="profile-grid grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Full Name</Label>
                   <Input
@@ -168,7 +168,7 @@ export default function ProfilePage() {
                   />
                 </div>
               </div>
-              <div className="flex justify-end gap-2">
+              <div className="button-group flex flex-col lg:flex-row justify-end gap-2">
                 {isEditing ? (
                   <>
                     <Button type="button" variant="outline" onClick={() => { setIsEditing(false); reset(); }}>
@@ -271,7 +271,14 @@ export default function ProfilePage() {
                         {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                       </button>
                     </div>
-                    <div className="flex justify-end gap-2">
+                    <div className="flex flex-col sm:flex-row justify-end gap-2">
+                      <Button
+                        type="button"
+                        onClick={onPasswordChange}
+                        className="w-full sm:w-auto"
+                      >
+                        Update Password
+                      </Button>
                       <Button
                         type="button"
                         variant="outline"
@@ -281,11 +288,9 @@ export default function ProfilePage() {
                           setNewPassword("");
                           setConfirmPassword("");
                         }}
+                        className="w-full sm:w-auto"
                       >
                         Cancel
-                      </Button>
-                      <Button type="button" onClick={onPasswordChange}>
-                        Update Password
                       </Button>
                     </div>
                   </div>

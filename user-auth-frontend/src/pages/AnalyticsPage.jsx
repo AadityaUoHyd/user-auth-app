@@ -52,12 +52,14 @@ export default function AnalyticsPage() {
   return (
     <div className="min-h-full bg-background p-6">
       <div className="mx-auto max-w-screen-2xl space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Analytics</h1>
-          <div className="flex items-center gap-2">
-            <DatePicker date={dateRange.from} onDateChange={(date) => setDateRange({ ...dateRange, from: date })} />
-            <DatePicker date={dateRange.to} onDateChange={(date) => setDateRange({ ...dateRange, to: date })} />
-            <Button onClick={fetchData} disabled={loading} variant="outline">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+          <h1 className="text-2xl sm:text-3xl font-bold">Analytics</h1>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:ml-auto">
+            <div className="hidden sm:flex items-center gap-2">
+              <DatePicker date={dateRange.from} onDateChange={(date) => setDateRange({ ...dateRange, from: date })} />
+              <DatePicker date={dateRange.to} onDateChange={(date) => setDateRange({ ...dateRange, to: date })} />
+            </div>
+            <Button onClick={fetchData} disabled={loading} variant="outline" className="w-full sm:w-auto">
               <Calendar className="mr-2 h-4 w-4" /> Refresh
             </Button>
           </div>
